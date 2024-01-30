@@ -6,29 +6,30 @@ const Room = require("./Room")
  * @description Manages game rooms
  */
 
-class RoomManager{
+module.exports = class RoomManager{
     constructor(){
         /**
          * @param "roomid": Room
          */
-        let rooms = {}
+        this.rooms = {}
     }
 
     newGame(){
         let room = new Room()
-        rooms[room.getRoomId()] = room
+        this.rooms[room.getRoomId()] = room
+        return room.getRoomId()
     }
 
     getRooms(){
-        let str = ""
-        for(let i of rooms){
-            str += i.getRoomStatus() + "\n"
+        let roomsarr = []
+        for(let i in this.rooms){
+            roomsarr.push(this.rooms[i].getRoomStatus())
         }
-        return str
+        return roomsarr
     }
 
     getRoom(gameid){
-        for(let i in rooms){
+        for(let i in this.rooms){
             if(i == gameid){
                 return this.rooms[i]
             }
