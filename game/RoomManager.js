@@ -8,31 +8,32 @@ const Room = require("./Room")
 
 module.exports = class RoomManager{
     constructor(){
-        /**
-         * @param "roomid": Room
-         */
-        this.rooms = {}
+        this.rooms = new Map() // roomid --> Room
     }
 
     newGame(){
         let room = new Room()
-        this.rooms[room.getRoomId()] = room
+        this.rooms.set(room.getRoomId(), room)
         return room.getRoomId()
     }
 
+    removeRoom(gameid){
+        return this.rooms.delete(gameid)
+    }
+
     getRooms(){
+        return this.rooms
+    }
+
+    getRoomsString(){
         let roomsarr = []
-        for(let i in this.rooms){
-            roomsarr.push(this.rooms[i].getRoomStatus())
-        }
+        this.rooms.forEach((item)=>{
+            roomsarr.push(item.getRoomStatus())
+        })
         return roomsarr
     }
 
     getRoom(gameid){
-        for(let i in this.rooms){
-            if(i == gameid){
-                return this.rooms[i]
-            }
-        }
+        return this.rooms.get(gameid)
     }
 }

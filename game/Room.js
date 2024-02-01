@@ -6,9 +6,9 @@ const Player = require("./Player.js")
  * @description Manages room data, such as players, game options, etc
  */
 module.exports = class Room {
-    constructor(privateGame = false) {
-        this.roomid = parseInt((Math.random() * 10000000).toFixed(0)).toString(16) // hexadecimal room id
-        this.names = ["", "", "", "", "", "", "", ""]
+    constructor(ownerName, privateGame = false) {
+        this.roomid = parseInt((Math.random() * 1000000000).toFixed(0)).toString(36) // hexadecimal room id
+        this.names = []
         this.playerCount = 0
         this.privateGame = privateGame
         this.map = new Gamemap()
@@ -24,6 +24,10 @@ module.exports = class Room {
 
     getPlayerCount() {
         return this.playerCount
+    }
+
+    getPlayers(){
+        return names
     }
 
     addPlayer(name) {

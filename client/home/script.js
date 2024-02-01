@@ -3,8 +3,15 @@ const refreshButton = document.getElementById("refresh");
 const gamesList = document.getElementById("games-list");
 
 if(document.cookie.indexOf("username") == -1){
-	document.cookie = "username="+prompt("Enter your username (you cannot change this! be careful!)");
+	if(document.cookie == '')
+		document.cookie = "username="+prompt("Enter your username (you cannot change this! be careful!)");
+	else
+		document.cookie = ";username="+prompt("Enter your username (you cannot change this! be careful!)");
 }
+
+const usernameP = document.getElementById("username")
+
+usernameP.innerText = "Username: "+ getCookie("username")
 
 createGameButton.addEventListener("click", ()=>{
 	window.location.href = "/newgame";
@@ -27,3 +34,20 @@ function refresh(){
 	})
 }
 refresh()
+
+// w3schools
+function getCookie(cname) {
+	let name = cname + "=";
+	let decodedCookie = decodeURIComponent(document.cookie);
+	let ca = decodedCookie.split(';');
+	for(let i = 0; i <ca.length; i++) {
+	  let c = ca[i];
+	  while (c.charAt(0) == ' ') {
+		c = c.substring(1);
+	  }
+	  if (c.indexOf(name) == 0) {
+		return c.substring(name.length, c.length);
+	  }
+	}
+	return "";
+  }

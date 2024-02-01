@@ -8,6 +8,7 @@ const express = require('express');
 const { createServer } = require('node:http');
 const { join } = require('node:path');
 const { Server } = require('socket.io');
+const fs = require("fs")
 
 const app = express();
 app.use(express.static("client"))
@@ -23,43 +24,46 @@ app.get('/', (req, res) => {
     res.sendFile(join(__dirname, 'client/home/index.html'));
 });
 
-app.get("/getrooms", (req,res)=>{
-    res.send(roomManager.getRooms());
+app.get("/getrooms", (req, res) => {
+    res.send(roomManager.getRoomsString());
 })
 
-app.get("/newgame", (req,res)=>{
+app.get("/newgame", (req, res) => {
     let room = roomManager.newGame()
     console.log(`Created new game with id ${room}`);
     res.redirect("/game/" + room);
-    
+
 })
 
-app.get("/game/:gameid", (req,res)=>{
-    for(let i in roomManager.rooms){
-        if(i == req.params.gameid){
-            res.sendFile(join(__dirname, 'client/game/index.html'));
-            if(roomManager.rooms[i].getPlayerCount() == 8){
-                res.send("Game is full");
-                return;
+app.get("/game/:gameid", (req, res) => {
+    for(let [_, room] of roomManager.getRooms()){
+        if (room.getRoomId() == req.params.gameid) {
+            if (room.getPlayerCount() == 8) {
+                res.send("Game is full. <a href='/'>go back!!</a>");
+            } else if (req.cookies.username == undefined) {
+                res.sendFile(join(__dirname, 'client/404.html'));
+            } else {
+                room.addPlayer(req.cookies.username);
+                res.send(fs.readFileSync(join(__dirname, 'client/game/index.html')).toString());
             }
-            if(req.cookies.username == undefined){
-                res.send("You must set a username");
-                return;
-            }
-            roomManager.rooms[i].addPlayer(req.cookies.username);
-            return;
+            return
         }
     }
     res.sendFile(join(__dirname, 'client/404.html'));
 })
 
 io.on('connection', (socket) => {
-    socket.on("join", (gameid, name)=>{
+    socket.on("join", (gameid, name) => {
         socket.join(gameid);
+        io.in(gameid).emit("refreshplayers")
         console.log(`[Socket.io] ${name} joined room ${gameid}`);
-        socket.on('disconnect', ()=>{
-            console.log("[Socket.io] "+name+" disconnected from room " + gameid);
+        socket.on('disconnect', () => {
+            console.log("[Socket.io] " + name + " disconnected from room " + gameid);
             roomManager.getRoom(gameid).removePlayer(name);
+            if (roomManager.getRoom(gameid).getPlayerCount() == 0) {
+                console.log("[Socket.io] Room " + gameid + " is empty. Closing room.");
+                roomManager.removeRoom(gameid)
+            }
         })
     })
 });
