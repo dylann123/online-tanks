@@ -11,10 +11,16 @@ module.exports = class RoomManager{
         this.rooms = new Map() // roomid --> Room
     }
 
-    newGame(){
-        let room = new Room()
+    /**
+     * 
+     * @param {string} owner 
+     * @param {boolean} priv 
+     * @returns room 
+     */
+    newGame(owner, priv = false){
+        let room = new Room(owner, priv)
         this.rooms.set(room.getRoomId(), room)
-        return room.getRoomId()
+        return room
     }
 
     removeRoom(gameid){
@@ -28,7 +34,8 @@ module.exports = class RoomManager{
     getRoomsString(){
         let roomsarr = []
         this.rooms.forEach((item)=>{
-            roomsarr.push(item.getRoomStatus())
+            if(!item.getPrivate())
+                roomsarr.push(item.getRoomStatus())
         })
         return roomsarr
     }

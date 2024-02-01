@@ -27,12 +27,16 @@ module.exports = class Room {
     }
 
     getPlayers(){
-        return names
+        return this.names
+    }
+
+    getPrivate(){
+        return this.privateGame
     }
 
     addPlayer(name) {
         if (this.playerCount < 8) {
-            this.names[this.playerCount] = name
+            this.names.push(name)
             this.playerCount++
             return true
         }

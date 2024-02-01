@@ -1,12 +1,11 @@
 const createGameButton = document.getElementById("create");
 const refreshButton = document.getElementById("refresh");
+const joinCustomButton = document.getElementById("join-custom");
 const gamesList = document.getElementById("games-list");
 
-if(document.cookie.indexOf("username") == -1){
-	if(document.cookie == '')
-		document.cookie = "username="+prompt("Enter your username (you cannot change this! be careful!)");
-	else
-		document.cookie = ";username="+prompt("Enter your username (you cannot change this! be careful!)");
+if(document.cookie.indexOf("username") == -1 || getCookie("username") == "null"){
+	let name = prompt("Enter your username (you cannot change this! be careful!)");
+	setCookie("username", name, 365);
 }
 
 const usernameP = document.getElementById("username")
@@ -14,11 +13,23 @@ const usernameP = document.getElementById("username")
 usernameP.innerText = "Username: "+ getCookie("username")
 
 createGameButton.addEventListener("click", ()=>{
-	window.location.href = "/newgame";
+	if(document.getElementById("private").checked == true)
+		window.location.href = "/newgame?private=true";
+	else
+		window.location.href = "/newgame?private=false"
 })
 
 refreshButton.addEventListener("click", ()=>{
 	refresh();
+})
+
+joinCustomButton.addEventListener("click", ()=>{
+	let gameid = document.getElementById("gameid").value;
+	if(gameid == ""){
+		alert("Please enter a game id")
+		return
+	}
+	window.location.href = "/game/"+gameid
 })
 
 function refresh(){
@@ -50,4 +61,10 @@ function getCookie(cname) {
 	  }
 	}
 	return "";
+  }
+  function setCookie(cname, cvalue, exdays) {
+	const d = new Date();
+	d.setTime(d.getTime() + (exdays*24*60*60*1000));
+	let expires = "expires="+ d.toUTCString();
+	document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
   }

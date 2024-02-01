@@ -18,6 +18,7 @@ const server = createServer(app);
 const io = new Server(server);
 
 const RoomManager = require("./game/RoomManager");
+const { log } = require('node:console');
 let roomManager = new RoomManager();
 
 app.get('/', (req, res) => {
@@ -29,27 +30,40 @@ app.get("/getrooms", (req, res) => {
 })
 
 app.get("/newgame", (req, res) => {
-    let room = roomManager.newGame()
-    console.log(`Created new game with id ${room}`);
-    res.redirect("/game/" + room);
+    for(let [_, room] of roomManager.getRooms()){
+        if (room.getPlayers().includes(req.cookies.username)) {
+            res.send("You are already in a game. <a href='/'>go back!!</a>");
+            return
+        }
+    }
+    let room = roomManager.newGame(req.cookies.username, req.query.private == "true" ? true : false)
+    console.log(`Created new ${room.getPrivate() ? "private" : "public"} game with id ${room.getRoomId()}`);
+    res.redirect("/game/" + room.getRoomId());
 
 })
 
 app.get("/game/:gameid", (req, res) => {
     for(let [_, room] of roomManager.getRooms()){
+        if (room.getPlayers().includes(req.cookies.username)) {
+            res.send("You are already in a game. <a href='/'>go back!!</a>");
+            return
+        }
         if (room.getRoomId() == req.params.gameid) {
             if (room.getPlayerCount() == 8) {
                 res.send("Game is full. <a href='/'>go back!!</a>");
             } else if (req.cookies.username == undefined) {
                 res.sendFile(join(__dirname, 'client/404.html'));
-            } else {
+            } else if (room.getPlayers().includes(req.cookies.username)) {
+                res.send("You are already in a game. <a href='/'>go back!!</a>");
+            }
+             else {
                 room.addPlayer(req.cookies.username);
                 res.send(fs.readFileSync(join(__dirname, 'client/game/index.html')).toString());
             }
             return
         }
     }
-    res.sendFile(join(__dirname, 'client/404.html'));
+    res.send("Invalid game. <a href='/'>go back!!</a>");
 })
 
 io.on('connection', (socket) => {
