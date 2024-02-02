@@ -18,7 +18,6 @@ const server = createServer(app);
 const io = new Server(server);
 
 const RoomManager = require("./game/RoomManager");
-const { log } = require('node:console');
 let roomManager = new RoomManager();
 
 app.get('/', (req, res) => {
@@ -39,12 +38,12 @@ app.get("/newgame", (req, res) => {
     let room = roomManager.newGame(req.cookies.username, req.query.private == "true" ? true : false)
     console.log(`Created new ${room.getPrivate() ? "private" : "public"} game with id ${room.getRoomId()}`);
     res.redirect("/game/" + room.getRoomId());
-
+    io.emit("refresh-games")
 })
 
 app.get("/game/:gameid", (req, res) => {
     for(let [_, room] of roomManager.getRooms()){
-        if (room.getPlayers().includes(req.cookies.username)) {
+        if (room.getPlayer(req.cookies.username)!= null) {
             res.send("You are already in a game. <a href='/'>go back!!</a>");
             return
         }
@@ -68,6 +67,7 @@ app.get("/game/:gameid", (req, res) => {
 
 io.on('connection', (socket) => {
     socket.on("join", (gameid, name) => {
+        if(!roomManager.getRoom(gameid)) return
         socket.join(gameid);
         io.in(gameid).emit("refreshplayers")
         console.log(`[Socket.io] ${name} joined room ${gameid}`);
@@ -77,6 +77,7 @@ io.on('connection', (socket) => {
             if (roomManager.getRoom(gameid).getPlayerCount() == 0) {
                 console.log("[Socket.io] Room " + gameid + " is empty. Closing room.");
                 roomManager.removeRoom(gameid)
+                io.emit("refresh-games")
             }
         })
     })

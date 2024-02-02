@@ -1,7 +1,16 @@
 const Tank = require("./Tank")
 
-module.exports = class Player extends Tank{
-    constructor(name, startx, starty, color, tanktype = "default"){
+module.exports = class Player{
+    constructor(name){
+        this.name = name
+        this.tank = new Tank(100, 100)
+    }
 
+    getTank(){
+        return this.tank
+    }
+
+    getName(){
+        return this.name
     }
 }

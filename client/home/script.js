@@ -1,3 +1,5 @@
+const socket = io()
+
 const createGameButton = document.getElementById("create");
 const refreshButton = document.getElementById("refresh");
 const joinCustomButton = document.getElementById("join-custom");
@@ -45,6 +47,10 @@ function refresh(){
 	})
 }
 refresh()
+
+socket.on("refresh-games", ()=>{
+	refresh()
+})
 
 // w3schools
 function getCookie(cname) {
