@@ -10,6 +10,8 @@ const { join } = require('node:path');
 const { Server } = require('socket.io');
 const fs = require("fs")
 
+const CHECK_EMPTY_ROOMS_MS = 5 * 1000
+
 const app = express();
 app.use(express.static("client"))
 const cookieParser = require('cookie-parser');
@@ -39,6 +41,14 @@ app.get("/newgame", (req, res) => {
     console.log(`Created new ${room.getPrivate() ? "private" : "public"} game with id ${room.getRoomId()}`);
     res.redirect("/game/" + room.getRoomId());
     io.emit("refresh-games")
+    setTimeout(() => {
+        for(let [_, room] of roomManager.getRooms()){
+            if(room.getPlayerCount() == 0){
+                console.log("clearing empty room "+room.getRoomId());
+                roomManager.removeRoom(room.getRoomId())
+            }
+        }
+    }, CHECK_EMPTY_ROOMS_MS);
 })
 
 app.get("/game/:gameid", (req, res) => {
@@ -79,6 +89,9 @@ io.on('connection', (socket) => {
                 roomManager.removeRoom(gameid)
                 io.emit("refresh-games")
             }
+        })
+        socket.on('input', (input) =>{
+            
         })
     })
 });

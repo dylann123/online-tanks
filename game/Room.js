@@ -1,5 +1,8 @@
+const Game = require("./Game.js")
 const Gamemap = require("./Gamemap.js")
 const Player = require("./Player.js")
+const Utilities = require("./util.js")
+const Util = new Utilities()
 
 /**
  * @class Room
@@ -11,13 +14,9 @@ module.exports = class Room {
         this.players = []
         this.playerCount = 0
         this.privateGame = privateGame
-        this.map = new Gamemap()
+        this.game = new Game();
 
-        this.WAITING = 0
-        this.STARTED = 1
-        this.ENDING = 2
-
-        this.status = this.WAITING
+        this.status = Util.GAME_WAITING
     }
 
     getRoomId() {
@@ -25,9 +24,9 @@ module.exports = class Room {
     }
 
     getRoomStateString(){
-        if(this.status == this.WAITING)
+        if(this.status == Util.GAME_WAITING)
             return "Waiting"
-        if(this.status == this.STARTED)
+        if(this.status == Util.GAME_STARTED)
             return "Started"
         return "Ended"
     }
@@ -91,7 +90,13 @@ module.exports = class Room {
     }
 
     start(){
-        this.status = this.STARTED
+        this.status = Util.GAME_STARTED
+        this.game.start()
+    }
+
+    finish(){
+        this.status = Util.GAME_ENDING
+        this.game.end()
     }
 }
 
