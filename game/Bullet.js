@@ -1,4 +1,6 @@
-class Bullet{
+const Vector = require("./Vector")
+
+module.exports = class Bullet{
     constructor(startx,starty,vector = new Vector('positional', 0, 0)){
         this.x = startx
         this.y = starty

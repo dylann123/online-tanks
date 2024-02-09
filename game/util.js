@@ -12,5 +12,20 @@ module.exports = class Util{
         this.MOVE_RIGHT = 1;
         this.MOVE_DOWN = 2;
         this.MOVE_LEFT = 3;
+
+        this.inputs = {
+            FWD_DOWN: 1,
+            FWD_UP: 0,
+            DWN_DOWN: 11,
+            DWN_UP: 10,
+            LFT_DOWN: 21,
+            LFT_UP: 20,
+            RGT_DOWN: 31,
+            RGT_UP: 30,
+            M1_DOWN: 101,
+            M1_UP: 100,
+            M2_DOWN: 201,
+            M2_UP: 200
+        }
     }
 }

@@ -40,6 +40,11 @@ module.exports = class RoomManager{
         return roomsarr
     }
 
+    /**
+     * 
+     * @param {String} gameid The game id
+     * @returns {Room} The room from the game id; undefined if does not exist
+     */
     getRoom(gameid){
         return this.rooms.get(gameid)
     }

@@ -1,8 +1,7 @@
 const Game = require("./Game.js")
 const Gamemap = require("./Gamemap.js")
 const Player = require("./Player.js")
-const Utilities = require("./util.js")
-const Util = new Utilities()
+const Util = require('./util').prototype
 
 /**
  * @class Room
@@ -97,6 +96,10 @@ module.exports = class Room {
     finish(){
         this.status = Util.GAME_ENDING
         this.game.end()
+    }
+
+    getGame(){
+        return this.game
     }
 }
 

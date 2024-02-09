@@ -20,6 +20,7 @@ const server = createServer(app);
 const io = new Server(server);
 
 const RoomManager = require("./game/RoomManager");
+const Util = require('./game/util').prototype;
 let roomManager = new RoomManager();
 
 app.get('/', (req, res) => {
@@ -91,7 +92,7 @@ io.on('connection', (socket) => {
             }
         })
         socket.on('input', (input) =>{
-            
+            roomManager.getRoom(gameid).getGame().registerInput(input, name)
         })
     })
 });

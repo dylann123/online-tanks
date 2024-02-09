@@ -1,11 +1,11 @@
 const Tank = require("./Tank")
-const Utilities = require("./util")
-const Util = new Utilities()
+const Util = require('./util').prototype
 
 module.exports = class Player{
     constructor(name){
         this.name = name
         this.tank = new Tank(100, 100)
+        this.inputs = []
     }
 
     getTank(){
@@ -28,7 +28,11 @@ module.exports = class Player{
         this.tank.tick()
     }
 
-    shoot(){
+    getBullet(){
+        
+    }
+
+    changeInput(input){
         
     }
 }

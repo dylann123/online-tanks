@@ -1,6 +1,5 @@
-const Utilities = require("./util")
 const Vector = require("./Vector")
-const Util = new Utilities()
+const Util = require('./util').prototype
 
 module.exports = class Tank {
     constructor(startx, starty, speed = 3) {

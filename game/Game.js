@@ -1,11 +1,11 @@
-const Utilities = require("./util");
-const Util = new Utilities()
+
+const Util = require('./util').prototype
 
 module.exports = class Game{
     constructor(players){
         this.status = Util.GAME_WAITING
         this.players = []
-        for(let i of players)
+        for(let i of this.players)
             this.players.push(i)
         this.bullets = []
     }
@@ -29,5 +29,16 @@ module.exports = class Game{
             player.tick()
         for(const bullet in this.bullets)
             bullet.tick()
+    }
+
+    getGameData(){
+        let data = {
+            players: this.players,
+            bullets: this.bullets
+        }
+    }
+
+    registerInput(input, playername){
+
     }
 }
