@@ -1,4 +1,4 @@
-module.exports = class Util{
+class Util{
     constructor(){
         // constants
 

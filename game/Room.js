@@ -10,6 +10,7 @@ const Util = require('./util').prototype
 module.exports = class Room {
     constructor(ownerName, privateGame = false) {
         this.roomid = parseInt((Math.random() * 1000000000).toFixed(0)).toString(36) // hexadecimal room id
+        this.owner = ownerName
         this.players = []
         this.playerCount = 0
         this.privateGame = privateGame
@@ -100,6 +101,10 @@ module.exports = class Room {
 
     getGame(){
         return this.game
+    }
+
+    getOwner(){
+        return this.owner
     }
 }
 

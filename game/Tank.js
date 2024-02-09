@@ -9,7 +9,7 @@ module.exports = class Tank {
         this.movementVector = new Vector('positional', 0, 0)
     }
 
-    move(direction) {
+    moveIn(direction) {
         switch (direction) {
             case (Util.MOVE_UP):
                 this.movementVector.add(new Vector('positional', 0, 1))
@@ -50,5 +50,14 @@ module.exports = class Tank {
     tick(){
         this.x += this.movementVector.getX()
         this.y += this.movementVector.getY()
+    }
+
+    pointIsIn(x, y){
+        return (x > this.x && x < this.x + 50 && y > this.y && y < this.y + 50)
+    }
+
+    hit(){
+        this.x = -100
+        this.y = -100
     }
 }

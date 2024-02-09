@@ -32,7 +32,7 @@ app.get("/getrooms", (req, res) => {
 })
 
 app.get("/newgame", (req, res) => {
-    for(let [_, room] of roomManager.getRooms()){
+    for (let [_, room] of roomManager.getRooms()) {
         if (room.getPlayers().includes(req.cookies.username)) {
             res.send("You are already in a game. <a href='/'>go back!!</a>");
             return
@@ -43,9 +43,9 @@ app.get("/newgame", (req, res) => {
     res.redirect("/game/" + room.getRoomId());
     io.emit("refresh-games")
     setTimeout(() => {
-        for(let [_, room] of roomManager.getRooms()){
-            if(room.getPlayerCount() == 0){
-                console.log("clearing empty room "+room.getRoomId());
+        for (let [_, room] of roomManager.getRooms()) {
+            if (room.getPlayerCount() == 0) {
+                console.log("clearing empty room " + room.getRoomId());
                 roomManager.removeRoom(room.getRoomId())
             }
         }
@@ -53,8 +53,8 @@ app.get("/newgame", (req, res) => {
 })
 
 app.get("/game/:gameid", (req, res) => {
-    for(let [_, room] of roomManager.getRooms()){
-        if (room.getPlayer(req.cookies.username)!= null) {
+    for (let [_, room] of roomManager.getRooms()) {
+        if (room.getPlayer(req.cookies.username) != null) {
             res.send("You are already in a game. <a href='/'>go back!!</a>");
             return
         }
@@ -66,7 +66,7 @@ app.get("/game/:gameid", (req, res) => {
             } else if (room.getPlayers().includes(req.cookies.username)) {
                 res.send("You are already in a game. <a href='/'>go back!!</a>");
             }
-             else {
+            else {
                 room.addPlayer(req.cookies.username);
                 res.send(fs.readFileSync(join(__dirname, 'client/game/index.html')).toString());
             }
@@ -78,7 +78,7 @@ app.get("/game/:gameid", (req, res) => {
 
 io.on('connection', (socket) => {
     socket.on("join", (gameid, name) => {
-        if(!roomManager.getRoom(gameid)) return
+        if (!roomManager.getRoom(gameid)) return
         socket.join(gameid);
         io.in(gameid).emit("refreshplayers")
         console.log(`[Socket.io] ${name} joined room ${gameid}`);
@@ -91,8 +91,16 @@ io.on('connection', (socket) => {
                 io.emit("refresh-games")
             }
         })
-        socket.on('input', (input) =>{
+        socket.on('start', () => {
+            if (roomManager.getRoom(gameid).getOwner() != name) return
+            roomManager.getRoom(gameid).start()
+            io.in(gameid).emit("start", roomManager.getRoom(gameid).getGame().getGameData())
+            console.log(`[Socket.io] ${name} started game ${gameid}`);
+        })
+        socket.on('input', (input) => {
             roomManager.getRoom(gameid).getGame().registerInput(input, name)
+            io.in(gameid).emit("update", roomManager.getRoom(gameid).getGame().getGameData())
+            console.log(`[Socket.io] ${name} input ${input}`);
         })
     })
 });
